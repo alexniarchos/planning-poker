@@ -6,6 +6,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path'); 
 const sanitizeHtml = require('sanitize-html');
+const filewatcher = require('filewatcher')();
 
 const {
   userJoin,
@@ -20,6 +21,10 @@ const {initDB} = require('./db');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 expressApp.use(cors());
+
+// restart process after cert change
+filewatcher.add(process.env.SSL_CERT);
+filewatcher.on('change', () => process.exit());
 
 let server;
 if (process.env.isTest) {
