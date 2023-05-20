@@ -4,7 +4,7 @@ const http = require('http');
 const fs = require('fs');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path'); 
+const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const filewatcher = require('filewatcher')();
 
@@ -16,15 +16,18 @@ const {
   getRoomUsers,
   getAllUsers
 } = require('./users');
-const {getRoom, setRoom, rooms} = require('./rooms');
-const {initDB} = require('./db');
+const { getRoom, setRoom, rooms } = require('./rooms');
+const { initDB } = require('./db');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 expressApp.use(cors());
 
 // restart process after cert change
 filewatcher.add(process.env.SSL_CERT);
-filewatcher.on('change', () => process.exit());
+filewatcher.on('change', () => {
+  console.log('SSL cert changed');
+  process.exit()
+});
 
 let server;
 if (process.env.isTest) {
@@ -45,13 +48,9 @@ const io = require('socket.io')(server, {
 
 initDB();
 
-setInterval(() => {
-  console.log('\nusers', getAllUsers());
-  console.log('rooms', rooms);
-}, 3000);
 
 io.on('connection', socket => {
-  socket.on('joinRoom', ({user}) => {
+  socket.on('joinRoom', ({ user }) => {
     user = {
       ...user,
       hasVoted: false,
@@ -73,7 +72,7 @@ io.on('connection', socket => {
     } else {
       roomUsers = getRoomUsers(user.room).map(user => ({
         ...user,
-        vote: null 
+        vote: null
       }));
     }
 
@@ -83,22 +82,22 @@ io.on('connection', socket => {
     });
 
     if (room.showVotes) {
-      io.to(user.room).emit('roomRevealVotes', getAllUsers().map(user => ({id: user.id, vote: user.vote})));
+      io.to(user.room).emit('roomRevealVotes', getAllUsers().map(user => ({ id: user.id, vote: user.vote })));
     }
 
-    const {messages = []} = getRoom(user.room);
+    const { messages = [] } = getRoom(user.room);
     messages.push({
       senderId: 'Server',
       text: `Welcome <b><u>${sanitizeHtml(user.name)}</u></b> ❤️`
     });
-    setRoom(user.room, {messages});
+    setRoom(user.room, { messages });
 
     io.to(user.room).emit('roomMessages', messages);
   });
 
   socket.on('disconnect', () => {
     const user = userLeave(socket.id);
-    if (!user){
+    if (!user) {
       return;
     }
 
@@ -112,9 +111,9 @@ io.on('connection', socket => {
       senderId: 'Server',
       text: `Goodbye <b><u>${sanitizeHtml(user.name)}</u></b> 👋`
     };
-    const {messages = []} = usersRoom;
+    const { messages = [] } = usersRoom;
     messages.push(message);
-    setRoom(user.room, {messages});
+    setRoom(user.room, { messages });
 
     io.to(user.room).emit('roomMessage', message);
     io.to(user.room).emit('roomUsers', {
@@ -123,7 +122,7 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('message', ({message: text}) => {
+  socket.on('message', ({ message: text }) => {
     const user = getUser(socket.id);
 
     const sanitizedMessage = sanitizeHtml(text);
@@ -136,14 +135,14 @@ io.on('connection', socket => {
       senderId: socket.id
     };
 
-    const {messages = []} = getRoom(user.room);
+    const { messages = [] } = getRoom(user.room);
     messages.push(message);
-    setRoom(user.room, {messages});
+    setRoom(user.room, { messages });
 
     io.to(user.room).emit('roomMessage', message);
   });
 
-  socket.on('vote', ({vote}) => {
+  socket.on('vote', ({ vote }) => {
     const user = getUser(socket.id);
 
     if (!user) {
@@ -168,32 +167,32 @@ io.on('connection', socket => {
     const votes = getAllUsers().map(user => user.vote);
     const votesCounter = {};
     votes.forEach(vote => votesCounter[vote] = (votesCounter[vote] || 0) + 1);
-    uniqueVotes = [...new Set(votes)];    
-    uniqueVotes.sort((a,b) => votesCounter[b] - votesCounter[a]);
+    uniqueVotes = [...new Set(votes)];
+    uniqueVotes.sort((a, b) => votesCounter[b] - votesCounter[a]);
     const totalVotes = votes.length;
     let text = '<b>Vote Results</b> 🎉<br>';
 
     uniqueVotes.forEach(vote => {
       if (votesCounter[vote] > 0) {
         const votesText = votesCounter[vote] > 1 ? 'votes' : 'vote';
-        if(!vote) {
-          text += `<br><b>Didn't vote</b> - ${votesCounter[vote]} ${votesText} (${(Math.trunc((votesCounter[vote]/totalVotes) * 100))}%)`
+        if (!vote) {
+          text += `<br><b>Didn't vote</b> - ${votesCounter[vote]} ${votesText} (${(Math.trunc((votesCounter[vote] / totalVotes) * 100))}%)`
         }
         else {
-          text += `<br>Card <b>[ ${vote} ]</b> - ${votesCounter[vote]} ${votesText} (${(Math.trunc((votesCounter[vote]/totalVotes) * 100))}%)`;
+          text += `<br>Card <b>[ ${vote} ]</b> - ${votesCounter[vote]} ${votesText} (${(Math.trunc((votesCounter[vote] / totalVotes) * 100))}%)`;
         }
       }
     });
 
-    const {messages = []} = getRoom(user.room);
+    const { messages = [] } = getRoom(user.room);
     const message = {
       senderId: 'Server',
       text
     };
     messages.push(message);
-    setRoom(user.room, {showVotes: true, messages});
+    setRoom(user.room, { showVotes: true, messages });
 
-    io.to(user.room).emit('roomRevealVotes', getAllUsers().map(user => ({id: user.id, vote: user.vote})));
+    io.to(user.room).emit('roomRevealVotes', getAllUsers().map(user => ({ id: user.id, vote: user.vote })));
     io.to(user.room).emit('roomMessage', message);
   });
 
@@ -201,7 +200,7 @@ io.on('connection', socket => {
     const user = getUser(socket.id);
 
     io.to(user.room).emit('roomClearVotes');
-    setRoom(user.room, {showVotes: false});
+    setRoom(user.room, { showVotes: false });
     const roomUsers = getRoomUsers(user.room);
     roomUsers.forEach(user => {
       setUser(user.id, {
