@@ -2,21 +2,32 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.mjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node ./src/app.mjs",
+    "dev": "nodemon ./src/app.mjs | pino-pretty -t",
+    "debug": "nodemon --inspect ./src/app.mjs | pino-pretty -t",
+    "migrate": "migrate-mongo up"
   },
   "author": "Alex Niarchos",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "filewatcher": "^3.0.1",
-    "mongodb": "^3.6.2",
-    "path": "^0.12.7",
-    "sanitize-html": "^2.0.0",
-    "socket.io": "^3.0.0"
+    "cors": "2.8.5",
+    "dotenv": "8.2.0",
+    "express": "4.17.1",
+    "mongodb": "5.7.0",
+    "path": "0.12.7",
+    "pino": "8.14.1",
+    "socket.io": "4.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.48.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "migrate-mongo": "11.0.0",
+    "nodemon": "2.0.19",
+    "pino-pretty": "10.1.0"
   }
 }
