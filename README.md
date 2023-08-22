@@ -1,1 +1,1 @@
-Planning Poker webapp built with Vue, Node and socket.io
+Built with Vue 3, Vite, Node.js, MongoDB and socket.io

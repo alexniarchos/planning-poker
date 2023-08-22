@@ -1,12 +1,17 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
+import { createVfm } from 'vue-final-modal';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import './styles/global.scss';
+import 'vue-final-modal/style.css';
 
-Vue.config.productionTip = false;
+const app = createApp(App);
+const vfm = createVfm();
+const pinia = createPinia();
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount('#app');
+app.use(router);
+app.use(vfm);
+app.use(pinia);
+
+app.mount('#app');

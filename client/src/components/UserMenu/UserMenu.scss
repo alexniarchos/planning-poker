@@ -1,0 +1,52 @@
+.user-menu {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 16px;
+  right: 16px;
+  padding: 8px;
+  color: white;
+  font-size: 18px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #383838;
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+  }
+
+  &__avatar {
+    min-width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: black;
+    border: 2px solid white;
+
+    &-letters {
+      position: relative;
+      top: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+
+  &__dropdown-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+  }
+
+  &__dropdown {
+    padding: 8px 0;
+    border-radius: 4px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+  }
+}

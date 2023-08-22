@@ -15,7 +15,9 @@ git pull --rebase
 npm i
 pm2 restart server
 
-#deploy client
+# just copy dist folder, dont clone the repo again!
+
+# deploy client
 cd /var/www/planning-poker.alexniarchos.com/planningpoker/client
 git fetch
 if [ ! -z $1 ]
