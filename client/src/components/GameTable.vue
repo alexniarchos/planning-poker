@@ -1,6 +1,6 @@
 <template>
   <div class="table">
-    <img class="table__image" src="../assets/table.svg" alt="table" />
+    <table-icon class="table__image" />
     <button v-if="showRevealButton" class="table__button" type="button" @click="onRevealClick()">
       <img class="table__button-image" src="../assets/button.svg" alt="" />
       <span class="table__button-text">{{ revealText }}</span>
@@ -33,6 +33,7 @@
 import { ref, computed } from 'vue';
 import { getColorGradients } from '@/utils/colors';
 import Icon from '@/components/Icon.vue';
+import TableIcon from '@/assets/TableIcon.vue';
 
 const props = defineProps({
   socket: {

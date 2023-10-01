@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <a href="/" class="brand">
-      <img class="brand__logo" src="../assets/logo.svg" />
+      <logo-icon class="brand__logo" />
       <span class="brand__name">Planning Poker</span>
     </a>
     <div class="room">
@@ -48,6 +48,7 @@ import GameTable from '@/components/GameTable.vue';
 import Icon from '@/components/Icon.vue';
 import GameSettingsModal from '@/components/GameSettingsModal.vue';
 import { useUserStore } from '@/stores/user';
+import LogoIcon from '@/assets/LogoIcon.vue';
 
 const userStore = useUserStore();
 
@@ -169,6 +170,7 @@ body {
 
   &__logo {
     width: 50px;
+    height: 60px;
   }
 
   &__name {
