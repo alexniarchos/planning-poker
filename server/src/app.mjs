@@ -1,13 +1,12 @@
-import express from 'express';
-import https from 'https';
-import http from 'http';
-import fs from 'fs';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import * as socketio from 'socket.io';
-import { DECKS, MAX_SEATS } from './constants/game-config.mjs';
-import logger from './logger.mjs';
+import express from "express";
+import https from "https";
+import http from "http";
+import fs from "fs";
+import cors from "cors";
+import * as socketio from "socket.io";
+import { DECKS, MAX_SEATS } from "./constants/game-config.mjs";
+import { initConfig } from "./config.mjs";
+import logger from "./logger.mjs";
 
 import {
   getRoom,
@@ -20,17 +19,15 @@ import {
   updateRoomUser,
   getRoomUser,
   findUserRoom,
-} from './rooms.mjs';
-import { initDB } from './db/index.mjs';
-
-dotenv.config({ path: path.join(new URL('.', import.meta.url).pathname, '../.env') });
+} from "./rooms.mjs";
+import { initDB } from "./db/index.mjs";
 
 const app = express();
 app.use(cors());
 
 let server;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   server = http.createServer({}, app);
 } else {
   server = https.createServer(
@@ -39,7 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
       cert: fs.readFileSync(process.env.SSL_CERT),
       ca: fs.readFileSync(process.env.SSL_CA),
     },
-    app,
+    app
   );
 }
 
@@ -51,8 +48,8 @@ const io = new socketio.Server(server, {
   },
 });
 
-io.on('connection', (socket) => {
-  socket.on('joinRoom', async ({ user }) => {
+io.on("connection", (socket) => {
+  socket.on("joinRoom", async ({ user }) => {
     let room = await getRoom(user.roomId);
 
     if (!room) {
@@ -82,7 +79,7 @@ io.on('connection', (socket) => {
 
     room = await getRoom(room.id);
 
-    io.to(socket.id).emit('initState', {
+    io.to(socket.id).emit("initState", {
       room: room.id,
       users: room.users,
       showVotes: room.showVotes,
@@ -94,10 +91,10 @@ io.on('connection', (socket) => {
       activeDeck: room.activeDeck,
     });
 
-    socket.broadcast.to(room.id).emit('userConnect', newUser);
+    socket.broadcast.to(room.id).emit("userConnect", newUser);
   });
 
-  socket.on('disconnecting', async () => {
+  socket.on("disconnecting", async () => {
     let user;
 
     const it = socket.rooms.values();
@@ -122,25 +119,25 @@ io.on('connection', (socket) => {
     }
 
     logger.info(`${user.name} left the room: ${user.roomId}`);
-    io.to(user.roomId).emit('userDisconnect', user.id);
+    io.to(user.roomId).emit("userDisconnect", user.id);
   });
 
-  socket.on('seatChanged', (seatId) => {
+  socket.on("seatChanged", (seatId) => {
     const room = findUserRoom(socket.rooms);
 
     if (!room) {
-      logger.error('Could not find a known room in rooms');
+      logger.error("Could not find a known room in rooms");
       return;
     }
 
-    io.to(room.id).emit('userChangedSeat', { userId: socket.id, seat: seatId });
+    io.to(room.id).emit("userChangedSeat", { userId: socket.id, seat: seatId });
   });
 
-  socket.on('vote', ({ vote }) => {
+  socket.on("vote", ({ vote }) => {
     const room = findUserRoom(socket.rooms);
 
     if (!room) {
-      logger.error('Could not find a known room in rooms');
+      logger.error("Could not find a known room in rooms");
       return;
     }
 
@@ -154,13 +151,13 @@ io.on('connection', (socket) => {
       hasVoted,
     });
 
-    io.to(user.roomId).emit('userVoted', {
+    io.to(user.roomId).emit("userVoted", {
       userId: socket.id,
       hasVoted,
     });
   });
 
-  socket.on('showVotes', () => {
+  socket.on("showVotes", () => {
     const room = findUserRoom(socket.rooms);
 
     const userVotes = Object.values(room.users).map((user) => ({
@@ -170,10 +167,10 @@ io.on('connection', (socket) => {
 
     setRoom(room.id, { showVotes: true });
 
-    io.to(room.id).emit('showVotes', userVotes);
+    io.to(room.id).emit("showVotes", userVotes);
   });
 
-  socket.on('clearVotes', () => {
+  socket.on("clearVotes", () => {
     const room = findUserRoom(socket.rooms);
 
     setRoom(room.id, { showVotes: false });
@@ -185,15 +182,15 @@ io.on('connection', (socket) => {
       });
     });
 
-    io.to(room.id).emit('clearVotes');
+    io.to(room.id).emit("clearVotes");
   });
 
-  socket.on('gameSettingsUpdated', async ({ decks, activeDeck }) => {
+  socket.on("gameSettingsUpdated", async ({ decks, activeDeck }) => {
     const room = findUserRoom(socket.rooms);
 
     await updateRoomSettings(room.id, { decks, activeDeck });
 
-    io.to(room.id).emit('gameSettingsUpdated', { decks, activeDeck });
+    io.to(room.id).emit("gameSettingsUpdated", { decks, activeDeck });
   });
 });
 

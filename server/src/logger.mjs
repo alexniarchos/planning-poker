@@ -1,3 +1,17 @@
-import pino from 'pino';
+import pino from "pino";
 
-export default pino();
+const logger = pino(
+  pino.transport({
+    targets: [
+      {
+        target: "pino-pretty",
+      },
+      {
+        target: "@logtail/pino",
+        options: { sourceToken: process.env.LOGTAIL_TOKEN },
+      },
+    ],
+  })
+);
+
+export default logger;
