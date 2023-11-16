@@ -280,7 +280,7 @@ function getCardColor(userId) {
 
     &--main {
       .table__username {
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 800;
       }
     }
@@ -301,6 +301,9 @@ function getCardColor(userId) {
   }
 
   &__username {
+    max-width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-top: 8px;
     text-align: center;
     color: white;
