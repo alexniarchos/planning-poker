@@ -7,7 +7,7 @@
       @click="selectCard(index)"
       @keypress="selectCard(index)"
     >
-      <icon name="card" :fill="cardColors[index]" />
+      <card-icon :fill="cardColors[index]" />
       <span class="card-deck__card-number">
         {{ card }}
       </span>
@@ -17,7 +17,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import Icon from '@/components/Icon.vue';
+import CardIcon from '@/assets/CardIcon.vue';
 import { getColorGradients } from '@/utils/colors';
 
 const props = defineProps({

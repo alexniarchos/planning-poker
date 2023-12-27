@@ -6,7 +6,7 @@
     </a>
     <div class="room">
       <div class="room__id">#{{ roomId }}</div>
-      <icon name="cogwheel" class="room__settings" @click="showGameSettings = true"></icon>
+      <cogwheel-icon class="room__settings" @click="showGameSettings = true" />
     </div>
     <game-table
       v-if="users"
@@ -45,10 +45,10 @@ import io from 'socket.io-client';
 import WelcomePopup from '@/components/WelcomePopup.vue';
 import CardDeck from '@/components/CardDeck.vue';
 import GameTable from '@/components/GameTable.vue';
-import Icon from '@/components/Icon.vue';
 import GameSettingsModal from '@/components/GameSettingsModal.vue';
 import { useUserStore } from '@/stores/user';
 import LogoIcon from '@/assets/LogoIcon.vue';
+import CogwheelIcon from '@/assets/CogwheelIcon.vue';
 
 const userStore = useUserStore();
 

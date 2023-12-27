@@ -2,7 +2,7 @@
   <div class="table">
     <table-icon class="table__image" />
     <button v-if="showRevealButton" class="table__button" type="button" @click="onRevealClick()">
-      <img class="table__button-image" src="../assets/button.svg" alt="" />
+      <button-icon class="table__button-image" />
       <span class="table__button-text">{{ revealText }}</span>
     </button>
     <div v-for="seatSide in seatSideOrder" :key="seatSide" :class="[`table__seats--${seatSide}`]">
@@ -21,7 +21,9 @@
           :disabled="seat.userId"
           @click="onSeatClick(seat.id, seat.userId)"
         >
-          <icon :name="getCardIcon(seat.userId)" :fill="getCardColor(seat.userId)" />
+          <card-icon v-if="hasUserVoted(seat.userId)" :fill="getCardColor(seat.userId)" />
+          <seat-solid-icon v-else-if="isSeatTaken(seat.userId)" :fill="getCardColor(seat.userId)" />
+          <seat-icon v-else :fill="getCardColor(seat.userId)" />
           <span class="table__card-vote">{{ deck.cards[users[seat.userId]?.vote] }}</span>
         </button>
         <div v-if="seatSide !== 'top'" class="table__username">{{ users[seat.userId]?.name }}</div>
@@ -32,8 +34,11 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { getColorGradients } from '@/utils/colors';
-import Icon from '@/components/Icon.vue';
 import TableIcon from '@/assets/TableIcon.vue';
+import CardIcon from '@/assets/CardIcon.vue';
+import SeatIcon from '@/assets/SeatIcon.vue';
+import SeatSolidIcon from '@/assets/SeatSolidIcon.vue';
+import ButtonIcon from '@/assets/ButtonIcon.vue';
 
 const props = defineProps({
   socket: {
@@ -143,20 +148,6 @@ function isSeatTaken(userId) {
 
 function hasUserVoted(userId) {
   return props.users[userId]?.hasVoted;
-}
-
-function getCardIcon(userId) {
-  let icon;
-
-  if (hasUserVoted(userId)) {
-    icon = 'card';
-  } else if (isSeatTaken(userId)) {
-    icon = 'seat-solid';
-  } else {
-    icon = 'seat';
-  }
-
-  return icon;
 }
 
 function getCardColor(userId) {
