@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/app.mjs",
-    "dev": "nodemon ./src/app.mjs | pino-pretty -t",
+    "start": "node --env-file=.env ./src/app.mjs",
+    "dev": "nodemon --env-file=.env ./src/app.mjs | pino-pretty -t",
     "debug": "nodemon --inspect ./src/app.mjs | pino-pretty -t",
     "migrate": "migrate-mongo up"
   },
@@ -16,7 +16,6 @@
   "dependencies": {
     "@logtail/pino": "0.4.12",
     "cors": "2.8.5",
-    "dotenv": "8.2.0",
     "express": "4.17.1",
     "mongodb": "5.7.0",
     "path": "0.12.7",
@@ -24,9 +23,9 @@
     "socket.io": "4.5.2"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.28.1",
+    "eslint": "8.48.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-plugin-import": "2.28.1",
     "migrate-mongo": "11.0.0",
     "nodemon": "2.0.19",
     "pino-pretty": "10.1.0"

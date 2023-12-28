@@ -5,9 +5,7 @@ import fs from "fs";
 import cors from "cors";
 import * as socketio from "socket.io";
 import { DECKS, MAX_SEATS } from "./constants/game-config.mjs";
-import { initConfig } from "./config.mjs";
 import logger from "./logger.mjs";
-
 import {
   getRoom,
   setRoom,
